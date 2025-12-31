@@ -46,9 +46,10 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
       - Open your project folder in File Explorer.
       - Type `cmd` in the address bar and press **Enter**.
       - Execute:
-        ```cmd
-        mx--cleanuserlib
-        ```
+   
+     ```cmd
+     mx--cleanuserlib
+     ```
 
    ---
 
