@@ -37,8 +37,8 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
    1. **Setup**:
       - Download the [latest release](https://github.com/EGorsel/mendix-userlib-cleanup/releases)
       - Place `mx--cleanuserlib.exe` in your **Mendix Project Root** (the folder containing the `.mpr` file).
-      > [!TIP]
-      > In case your browser blocks the .exe file, download the .zip file instead, unzip after downloading and copy paste the 'mx--cleanuserlib.exe' file to your Mendix project root directory
+   > [!TIP]
+   > In case your browser blocks the .exe file, download the .zip file instead, unzip after downloading and copy paste the 'mx--cleanuserlib.exe' file to your Mendix project root directory
       
       
    3. **Run**:
