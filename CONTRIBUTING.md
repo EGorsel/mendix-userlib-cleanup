@@ -24,4 +24,15 @@ We welcome contributions from everyone! Whether you're fixing a bug, adding a ne
 3. Install dependencies for building: `pip install pyinstaller`.
 4. Check the `README.md` for tool usage details.
 
+## Releasing (Maintainers Only)
+
+To create a new release:
+1. **Tag the Release**: Tag the final commit on `main` with a version number (e.g., `git tag -a v1.0.0 -m "Release v1.0.0"`).
+2. **Push the Tag**: `git push origin v1.0.0`.
+3. **GitHub Release**:
+    - Go to **Releases** on GitHub and select **Draft a new release**.
+    - Link it to the pushed tag.
+    - **Note**: GitHub automatically creates `.zip` and `.tar.gz` source archives for you. **Do not manually upload a zip of the root directory.**
+    - **Attach Assets**: Manually upload the `mx--cleanuserlib.exe` file as a release asset so users can download the standalone binary without needing Python.
+
 Thank you for being part of the community!
