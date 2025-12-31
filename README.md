@@ -33,9 +33,10 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
 
 ## 📖 1. How to Use
 
-   ### 📥 1.1. Quick Start
-
+> [!NOTE]
 > In case your browser blocks the .exe file, download the 'mendix-userlib-cleanup-main.zip' file instead, unzip after downloading and copy paste the 'mx--cleanuserlib.exe' file in the root directory of your Mendix project.
+
+   ### 📥 1.1. Quick Start
 
    - **Setup**:
       - Download the [latest release](https://github.com/EGorsel/mendix-userlib-cleanup/releases)
