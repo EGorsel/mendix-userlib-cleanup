@@ -75,19 +75,7 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
 
 ---
 
-## 🛡️ 2. Security & Trust
-As a portable utility, Windows SmartScreen may flag the `.exe` as "uncommon." 
-
-**To proceed:**
-- **Edge**: `...` > **Keep** > **Show more** > **Keep anyway**.
-- **Windows**: **More info** > **Run anyway**.
-
-> [!TIP]
-> This project is 100% open-source. For maximum transparency, you can review the source code in `internal/src` or build the binary yourself using `internal/scripts/local_build.bat`.
-
----
-
-## ⚙️ 3. How the project Works
+## ⚙️ 2. How the project Works
 The suite follows a standard audit methodology:
 1. **Resolution**: Locates the project context via `.mpr` lookup.
 2. **Identification**: Extracts the Studio Pro version from project metadata.
@@ -96,6 +84,18 @@ The suite follows a standard audit methodology:
 5. **Deep Scan**: Uses signature matching to find duplicates with mismatched names.
 6. **Filtering**: Applies safety rules to protect required framework JARs.
 7. **Archiving**: Safely isolates files into timestamped ZIP archives.
+
+---
+
+## 🛡️ 3. Security & Trust
+As a portable utility, Windows SmartScreen may flag the `.exe` as "uncommon." 
+
+**To proceed:**
+- **Edge**: `...` > **Keep** > **Show more** > **Keep anyway**.
+- **Windows**: **More info** > **Run anyway**.
+
+> [!TIP]
+> This project is 100% open-source. For maximum transparency, you can review the source code in `internal/src` or build the binary yourself using `internal/scripts/local_build.bat`.
 
 ---
 
@@ -111,7 +111,7 @@ The suite follows a standard audit methodology:
 
 ---
 
-## 🤝 6. Contributing & Support
+## 🤝 5. Contributing & Support
 This is a **community-driven** project. We welcome contributions of all kinds!
 
 - **Contributing**: Please read our [Contribution Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
