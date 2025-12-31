@@ -87,25 +87,25 @@ mx--cleanuserlib --check
 ## 📂 Architecture
 | Script | Platform Shift & Logic Evolution |
 | :--- | :--- |
-| `src/core/manager.py` | **The Orchestrator**: Handles version detection, routing, and safety health-checks. |
-| `src/engines/clean_userlib_mx11.py` | **Mendix 11**: Optimized for Java 21 and advanced `vendorlib` dependency resolution. |
-| `src/engines/clean_userlib_mx10.py` | **Mendix 10**: Cross-references "unmanaged" `userlib` against the new "managed" `vendorlib` architecture. |
-| `src/engines/clean_userlib_mx9.py` | **Mendix 9**: Implements advanced name normalization and legacy deep-scan support. |
-| `src/engines/clean_userlib_mx8.py` | **Mendix 8**: Tailored for Java 11 transition and initial `.requiredlib` metadata parsing. |
-| `src/engines/clean_userlib_mx7.py` | **Mendix 7**: Baseline logic designed for legacy Java 8 and old module packaging formats. |
+| `internal/src/core/manager.py` | **The Orchestrator**: Handles version detection, routing, and safety health-checks. |
+| `internal/src/engines/clean_userlib_mx11.py` | **Mendix 11**: Optimized for Java 21 and advanced `vendorlib` dependency resolution. |
+| `internal/src/engines/clean_userlib_mx10.py` | **Mendix 10**: Cross-references "unmanaged" `userlib` against the new "managed" `vendorlib` architecture. |
+| `internal/src/engines/clean_userlib_mx9.py` | **Mendix 9**: Implements advanced name normalization and legacy deep-scan support. |
+| `internal/src/engines/clean_userlib_mx8.py` | **Mendix 8**: Tailored for Java 11 transition and initial `.requiredlib` metadata parsing. |
+| `internal/src/engines/clean_userlib_mx7.py` | **Mendix 7**: Baseline logic designed for legacy Java 8 and old module packaging formats. |
 
 <br>
 
 ---
 
 ## 🐛 Report a Bug
-Found an issue? Help us improve by following our [Bug Reporting Guide](docs/BugReport.md). Clear reports with version details help us resolve issues faster.
+Found an issue? Help us improve by following our [Bug Reporting Guide](.github/BugReport.md). Clear reports with version details help us resolve issues faster.
 
 
 ---
 
 ## 🤝 Contributing
-We welcome the community to help make this tool better for everyone! Whether you want to fix a bug, suggest a feature, or improve documentation, please see our [Contribution Guide](docs/Contribute.md) to get started.
+We welcome the community to help make this tool better for everyone! Whether you want to fix a bug, suggest a feature, or improve documentation, please see our [Contribution Guide](.github/Contribute.md) to get started.
 
 ---
 
