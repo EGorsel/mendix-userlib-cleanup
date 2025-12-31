@@ -1,0 +1,23 @@
+# Mendix Studio Pro Version Reference Guide
+# Format: Use "Range: START to END" for major series or semi-colon/comma lists for explicit versions.
+
+# Mendix 11 Series (Current)
+Range: 11.0.0 to 11.10.0
+
+# Mendix 10 Series (LTS)
+Range: 10.0.0 to 10.24.99
+
+# Mendix 9 Series (LTS)
+Range: 9.0.0 to 9.24.99
+
+# Mendix 8 Series (LTS)
+Range: 8.0.0 to 8.18.99
+
+# Mendix 7 Series (LTS)
+Range: 7.0.0 to 7.23.99
+
+# Mendix 6 Series
+Range: 6.0.0 to 6.10.10
+
+# Mendix 5 Series
+Range: 5.0.0 to 5.21.9

@@ -1,0 +1,24 @@
+name: Userlib Cleanup Lint
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  cleanup-lint:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run Cleanup Dry-Run
+        run: |
+          # Note: This check will fail if it detects files that should be removed,
+          # effectively preventing 'JAR Hell' from being committed to the main branch.
+          python src/core/manager.py --check

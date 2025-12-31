@@ -1,0 +1,88 @@
+# Author: Erik van Gorsel
+# Optimization: Mendix 11 Managed Dependencies (vendorlib + Java 21)
+#
+# Architectural Shift: 
+# Mendix 11 continues the use of 'vendorlib' for managed dependencies
+# while moving to Java 21. This script ensures 'userlib' remains lean
+# by removing libraries already provided by Studio Pro 11.
+
+import os
+import sys
+import re
+from collections import defaultdict
+
+# Add 'core' to path to find cleanup_utils
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'core'))
+import utils
+
+# Vendorlib scanning moved to core/cleanup_utils.py
+
+def clean_mx11_userlib():
+    # Resolve paths using standardized resolver
+    project_root, userlib_path = utils.resolve_paths(__file__)
+
+    if not os.path.exists(userlib_path):
+        utils.log_error("userlib folder not found.")
+        return
+
+    all_files = [f for f in os.listdir(userlib_path) if os.path.isfile(os.path.join(userlib_path, f))]
+    all_files = [f for f in all_files if not f.startswith('userlib_backup_') and not f.endswith('.zip')]
+    jars = [f for f in all_files if f.endswith('.jar')]
+    
+    if not jars:
+        utils.log_info("No JAR files found in userlib.")
+        return
+
+    to_move = set()
+
+    # 1. Vendorlib Cross-Check
+    utils.log_info("Checking for managed dependencies in vendorlib...")
+    vendor_jars = utils.get_vendorlib_jars(project_root)
+    vendor_normalized = {utils.normalize_lib_name(utils.get_jar_details(v)[0]): v for v in vendor_jars}
+    
+    for jar in jars:
+        base_name, ver = utils.get_jar_details(jar)
+        norm_name = utils.normalize_lib_name(base_name)
+        if norm_name in vendor_normalized:
+            utils.log_warning(f"Found in vendorlib: {jar} (Managed as {vendor_normalized[norm_name]})")
+            to_move.add(jar)
+
+    # 2. Filename-based grouping
+    library_groups = defaultdict(list)
+    for jar in jars:
+        if jar in to_move: continue
+        base_name, ver = utils.get_jar_details(jar)
+        normalized_name = utils.normalize_lib_name(base_name)
+        library_groups[normalized_name].append({'file': jar, 'version': ver})
+
+    for norm_name, files in library_groups.items():
+        if len(files) > 1:
+            files.sort(key=lambda x: utils.parse_version(x['version']))
+            for old in files[:-1]:
+                to_move.add(old['file'])
+
+    # 3. Deep scan with .exe tool
+    utils.log_info("Running deep scan with signature-based engine...")
+    exe_findings = utils.get_exe_tool_findings(userlib_path)
+    for f in exe_findings:
+        if f in jars:
+            to_move.add(f)
+
+    # 4. Filter associated metadata and protected libs
+    final_list = list(to_move)
+    for jar in final_list:
+        pattern = re.escape(jar) + r'.*'
+        for f in all_files:
+            if f != jar and re.match(pattern, f):
+                to_move.add(f)
+
+    # Filtering protected libs
+    final_removal_set = {f for f in to_move if not any(lib in f.lower() for lib in utils.PROTECTED_LIBS)}
+    for prot in (to_move - final_removal_set):
+        utils.log_info(f"Protecting critical library: {prot}")
+
+    utils.log_info(f"Reviewed {len(all_files)} files in userlib.")
+    utils.handle_backup_and_cleanup(final_removal_set, userlib_path, engine_name="Mendix 11 Engine")
+
+if __name__ == "__main__":
+    clean_mx11_userlib()

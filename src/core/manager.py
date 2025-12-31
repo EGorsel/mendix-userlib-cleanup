@@ -1,0 +1,268 @@
+# Author: Erik van Gorsel
+# Mendix Universal Userlib Cleanup
+#
+# Supported Mendix Studio Pro LTS Versions:
+# 10.24 LTS: 10.24.13, 10.24.12, 10.24.11, 10.24.10, 10.24.9, 10.24.8, 10.24.6, 
+#            10.24.5, 10.24.4, 10.24.3, 10.24.2, 10.24.1, 10.24.0
+#  9.24 LTS: 9.24.40, 9.24.39, 9.24.38, 9.24.37, 9.24.36, 9.24.35, 9.24.34
+#  8.18 LTS: 8.18.35, 8.18.34
+#  7.23 LTS: All 7.23.x versions
+import os
+import re
+import sys
+import sqlite3
+import subprocess
+import json
+import utils
+
+def get_mendix_version(project_root):
+    """
+    Extracts Mendix version using prioritized sources:
+    1. .mpr metadata (Primary)
+    2. settings.json (Fallback)
+    """
+    # Source 1: .mpr (SQLite)
+    mpr_files = [f for f in os.listdir(project_root) if f.endswith('.mpr') and not f.endswith('.bak')]
+    if mpr_files:
+        mpr_path = os.path.join(project_root, mpr_files[0])
+        try:
+            conn = sqlite3.connect(f"file:{mpr_path}?mode=ro", uri=True)
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM _MetaData LIMIT 1")
+            row = cursor.fetchone()
+            if row:
+                v = row[0] if re.match(r'^\d+\.', str(row[0])) else row[1]
+                conn.close()
+                return str(v)
+            conn.close()
+        except:
+            pass
+
+    # Source 2: settings.json
+    settings_path = os.path.join(project_root, 'settings.json')
+    if os.path.exists(settings_path):
+        try:
+            with open(settings_path, 'r') as f:
+                data = json.load(f)
+                return data.get('MendixVersion') or data.get('modelerVersion')
+        except:
+            pass
+            
+    return None
+
+def normalize_version(v):
+    """Strips suffixes like LTS, MTS and trims whitespace."""
+    if not v: return None
+    # Remove common suffixes and build numbers
+    v = re.sub(r'[\s\-]+(LTS|MTS|MTSLatest|Patch).*$', '', str(v), flags=re.IGNORECASE)
+    # Ensure it only contains digits and dots for semantic parsing
+    match = re.search(r'(\d+\.\d+(\.\d+)?)', v)
+    return match.group(1) if match else v.strip()
+
+def parse_mx_versions(file_path):
+    """
+    Intelligently parses MxVersions.txt.
+    Supports ranges ('Range: X.X.X to Y.Y.Y') and list formats.
+    """
+    explicit_versions = set()
+    ranges = []
+    
+    if not os.path.exists(file_path):
+        return explicit_versions, ranges
+        
+    try:
+        with open(file_path, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                
+                # Broad regex for Range detection: Range: START to END
+                range_match = re.search(r'Range:\s*([\d\.\-]+)\s+to\s+([\d\.\-]+)', line, re.IGNORECASE)
+                if range_match:
+                    try:
+                        start = utils.parse_version(normalize_version(range_match.group(1)))
+                        end = utils.parse_version(normalize_version(range_match.group(2)))
+                        ranges.append((start, end))
+                    except Exception as e:
+                        print(f"Note: Skipping invalid range format: {line}")
+                    continue
+
+                # Fallback: Extract anything that looks like a version number
+                version_matches = re.finditer(r'(\d+\.\d+\.\d+)', line)
+                for match in version_matches:
+                    explicit_versions.add(match.group(1))
+                    
+    except Exception as e:
+        print(f"Note: Error parsing MxVersions.txt: {e}")
+        
+    return explicit_versions, ranges
+
+def is_valid_version(v, explicit_set, ranges):
+    """Validates if a version exists in the reference list or falls within a range."""
+    norm_v = normalize_version(v)
+    if not norm_v: return False
+    
+    # 1. Check explicit list
+    if norm_v in explicit_set:
+        return True
+        
+    # 2. Check ranges
+    try:
+        parsed_v = utils.parse_version(norm_v)
+        for start, end in ranges:
+            if start <= parsed_v <= end:
+                return True
+    except:
+        pass
+        
+    return False
+
+# find_project_root moved to core/utils.py
+
+def main():
+    # PyInstaller onefile support: detect resource directory
+    if hasattr(sys, '_MEIPASS'):
+        resource_dir = sys._MEIPASS
+    else:
+        resource_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    # Detect Path Context using standardized resolver
+    project_root, userlib_path = utils.resolve_paths(__file__)
+    
+    if not project_root:
+        utils.log_error("Could not find a Mendix project (.mpr file) in this directory or any parent directories.")
+        print("Please run this tool from your Mendix project root folder.")
+        sys.exit(1)
+        
+    userlib_path = os.path.join(project_root, 'userlib')
+    
+    # Custom Revert String: zipname --revert or --revert
+    if len(sys.argv) >= 3 and sys.argv[2].lower() == "--revert":
+        zip_to_revert = sys.argv[1]
+        utils.log_header("Mendix Userlib Cleanup (Special Revert)")
+        utils.revert_files(userlib_path, specific_zip=zip_to_revert)
+        sys.exit(0)
+
+    # Global Revert Check (Prioritized)
+    if '--revert' in sys.argv:
+        utils.log_header("Mendix Userlib Cleanup (Revert Mode)")
+        utils.revert_files(userlib_path)
+        sys.exit(0)
+    
+    utils.log_header("Mendix Userlib Cleanup")
+    print() # Match user's requested spacing
+    
+    # 1. Detect Version
+    utils.log_info("Detecting used Mendix Studio Pro version...")
+    version_str = get_mendix_version(project_root)
+    
+    # Load reference data from the bundled config
+    config_dir = os.path.join(resource_dir, "config")
+    explicit_set, ranges = parse_mx_versions(os.path.join(config_dir, "MxVersions.txt"))
+    
+    if version_str:
+        utils.log_success(f"Detected Mendix Version: {version_str}")
+        print() # Match user's requested spacing
+        utils.log_info(f"Matching found Mendix version {version_str} with best suitable cleanup engine....")
+    else:
+        utils.log_warning("Could not determine project version automatically.")
+        version_str = input(f"{utils.COLOR_BOLD}Please enter the Mendix Studio Pro version used for this project (e.g., 9.14.2):{utils.COLOR_RESET} ").strip()
+
+    # Final Validation & Normalization
+    version_str = normalize_version(version_str)
+    if not is_valid_version(version_str, explicit_set, ranges):
+        # Proceed anyway as it might be a very new patch
+        pass
+    
+    # LTS Routing Logic
+    LTS_MAPPING = {
+        # 11 Series
+        "11.0.0": "clean_userlib_mx11.py",
+        # 10.24 LTS Series
+        "10.24.13": "clean_userlib_mx10.py",
+        "10.24.12": "clean_userlib_mx10.py",
+        "10.24.11": "clean_userlib_mx10.py",
+        "10.24.10": "clean_userlib_mx10.py",
+        "10.24.9": "clean_userlib_mx10.py",
+        "10.24.8": "clean_userlib_mx10.py",
+        "10.24.6": "clean_userlib_mx10.py",
+        "10.24.5": "clean_userlib_mx10.py",
+        "10.24.4": "clean_userlib_mx10.py",
+        "10.24.3": "clean_userlib_mx10.py",
+        "10.24.2": "clean_userlib_mx10.py",
+        "10.24.1": "clean_userlib_mx10.py",
+        "10.24.0": "clean_userlib_mx10.py",
+        # 9.24 LTS Series
+        "9.24.40": "clean_userlib_mx9.py",
+        "9.24.39": "clean_userlib_mx9.py",
+        "9.24.38": "clean_userlib_mx9.py",
+        "9.24.37": "clean_userlib_mx9.py",
+        "9.24.36": "clean_userlib_mx9.py",
+        "9.24.35": "clean_userlib_mx9.py",
+        "9.24.34": "clean_userlib_mx9.py",
+        # 8.18 LTS Series
+        "8.18.35": "clean_userlib_mx8.py",
+        "8.18.34": "clean_userlib_mx8.py"
+    }
+    
+    # Try exact match first, then prefix match
+    target_script = LTS_MAPPING.get(version_str)
+    
+    if not target_script:
+        for lts_ver, script in LTS_MAPPING.items():
+            if version_str.startswith(lts_ver):
+                target_script = script
+                break
+    
+    if not target_script:
+        try:
+            major = int(version_str.split('.')[0])
+            # Auto-assign for versions 7-11
+            if major == 7:
+                target_script = "clean_userlib_mx7.py"
+            elif major == 8:
+                target_script = "clean_userlib_mx8.py"
+            elif major == 9:
+                target_script = "clean_userlib_mx9.py"
+            elif major == 10:
+                target_script = "clean_userlib_mx10.py"
+            elif major == 11:
+                target_script = "clean_userlib_mx11.py"
+            elif major > 11:
+                target_script = "clean_userlib_mx11.py"
+            elif major < 7:
+                target_script = "clean_userlib_mx7.py"
+        except:
+            pass
+    
+    if target_script:
+        utils.log_success(f"Linked to cleanup engine: {target_script}")
+        print() # Match user's requested spacing
+    else:
+        utils.log_error(f"No suitable cleanup script could be assigned for version {version_str}")
+        sys.exit(1)
+    
+    engines_dir = os.path.join(resource_dir, "src", "engines")
+    script_path = os.path.join(engines_dir, target_script)
+    if not os.path.exists(script_path):
+        print(f"Error: Could not find target script at: {script_path}")
+        sys.exit(1)
+
+    # Execute Target Script
+    sys.stdout.flush()
+    
+    cmd = [sys.executable, script_path] + [arg for arg in sys.argv[1:] if arg not in ['--revert', '--check']]
+    if '--check' in sys.argv:
+        cmd.append('--check')
+    
+    try:
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as e:
+        sys.exit(e.returncode)
+    except KeyboardInterrupt:
+        utils.log_info("Operation cancelled by user.")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
