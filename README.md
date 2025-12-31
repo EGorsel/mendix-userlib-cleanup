@@ -99,13 +99,13 @@ mx--cleanuserlib --check
 ---
 
 ## 🐛 Report a Bug
-Found an issue? Help us improve by following our [Bug Reporting Guide](.github/BugReport.md). Clear reports with version details help us resolve issues faster.
+Found an issue? Help us improve by following our [Security & Bug Reporting Guide](SECURITY.md). Clear reports with version details help us resolve issues faster.
 
 
 ---
 
 ## 🤝 Contributing
-We welcome the community to help make this tool better for everyone! Whether you want to fix a bug, suggest a feature, or improve documentation, please see our [Contribution Guide](.github/Contribute.md) to get started.
+We welcome the community to help make this tool better for everyone! Whether you want to fix a bug, suggest a feature, or improve documentation, please see our [Contribution Guide](CONTRIBUTING.md) to get started.
 
 ---
 
