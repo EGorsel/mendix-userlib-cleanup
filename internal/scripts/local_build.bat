@@ -16,8 +16,8 @@ if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
 if exist mx--cleanuserlib.spec del mx--cleanuserlib.spec
 
-REM Stay in the internal directory where this script and the spec file are
-cd /d "%~dp0"
+REM Move to the internal directory where src/ and config/ are located
+cd /d "%~dp0.."
 
 echo [2/3] Building standalone executable (Optimized)...
 pyinstaller --noconfirm --onefile --console --name mx--cleanuserlib ^

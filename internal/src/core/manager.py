@@ -11,9 +11,33 @@ import os
 import re
 import sys
 import sqlite3
-import subprocess
 import json
+
+# --- Path Resolution & Module Loading ---
+# Detect if running as a PyInstaller frozen EXE
+if hasattr(sys, '_MEIPASS'):
+    RESOURCE_DIR = sys._MEIPASS
+    ENGINES_PATH = os.path.join(RESOURCE_DIR, "src", "engines")
+    CORE_PATH = os.path.join(RESOURCE_DIR, "src", "core")
+else:
+    # Running from source (internal/src/core/manager.py)
+    CORE_PATH = os.path.dirname(os.path.abspath(__file__))
+    # Go up 2 levels from internal/src/core/ to get to internal/
+    RESOURCE_DIR = os.path.abspath(os.path.join(CORE_PATH, "..", ".."))
+    ENGINES_PATH = os.path.join(RESOURCE_DIR, "src", "engines")
+
+# Ensure critical directories are in sys.path for direct imports
+for path in [ENGINES_PATH, CORE_PATH]:
+    if os.path.exists(path) and path not in sys.path:
+        sys.path.insert(0, path)
+
+# Import Utilities and Engines
 import utils
+import clean_userlib_mx11
+import clean_userlib_mx10
+import clean_userlib_mx9
+import clean_userlib_mx8
+import clean_userlib_mx7
 
 def get_mendix_version(project_root):
     """
@@ -121,13 +145,8 @@ def is_valid_version(v, explicit_set, ranges):
 # find_project_root moved to core/utils.py
 
 def main():
-    # PyInstaller onefile support: detect resource directory
-    if hasattr(sys, '_MEIPASS'):
-        resource_dir = sys._MEIPASS
-    else:
-        resource_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
     # Detect Path Context using standardized resolver
+    # Note: utils.resolve_paths handles finding the .mpr
     project_root, userlib_path = utils.resolve_paths(__file__)
     
     if not project_root:
@@ -158,7 +177,7 @@ def main():
     version_str = get_mendix_version(project_root)
     
     # Load reference data from the bundled config
-    config_dir = os.path.join(resource_dir, "config")
+    config_dir = os.path.join(RESOURCE_DIR, "config")
     explicit_set, ranges = parse_mx_versions(os.path.join(config_dir, "MxVersions.txt"))
     
     if version_str:
@@ -171,9 +190,6 @@ def main():
 
     # Final Validation & Normalization
     version_str = normalize_version(version_str)
-    if not is_valid_version(version_str, explicit_set, ranges):
-        # Proceed anyway as it might be a very new patch
-        pass
     
     # LTS Routing Logic
     LTS_MAPPING = {
@@ -245,11 +261,6 @@ def main():
     
     # Execute Targeted Engine directly
     try:
-        # Pass relevant arguments to the cleanup function
-        # The cleanup functions are expected to handle their own arguments (e.g., --check)
-        # For now, we'll assume they can access sys.argv directly if needed,
-        # or we could pass specific flags.
-        # For this change, we're just calling the function.
         target_func()
     except KeyboardInterrupt:
         utils.log_info("Operation cancelled by user.")

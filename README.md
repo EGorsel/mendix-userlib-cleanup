@@ -14,8 +14,20 @@ This tool was developed to provide Mendix developers with a universal, version-a
 - **Universal**: Specialized support for Mendix 7, 8, 9, 10, and 11.
 - **Safety First**: Moves files to timestamped ZIP backups with a one-click revert.
 - **Vendorlib Aware**: Handles the Mendix 10/11 `vendorlib` structure correctly.
-- **Zero Dependency**: Standalone execution (.exe) ensures no Python installation is required to run the tool.
+- **Standalone**: execution (.exe) ensures no Python installation is required to run the tool. (See [Security & Trust](#-security--trust) note below).
 - **CI/CD Ready**: Integrated `--check` mode for automated quality gates.
+
+---
+
+## 🛡️ Security & Trust
+As this is a custom-built tool, some browsers (like Microsoft Edge) or Windows SmartScreen may show a warning when downloading or running the `.exe` for the first time (e.g., *"not commonly downloaded"*).
+
+**To proceed safely:**
+1. **Edge**: Click the three dots (...) next to the download > select **Keep** > click **Show more** > select **Keep anyway**.
+2. **Windows**: If a blue "Windows protected your PC" popup appears, click **More info** > select **Run anyway**.
+
+> [!TIP]
+> This tool is open-source. For maximum transparency, you can review the source code in the `internal/src` directory or build the executable yourself using the provided `internal/scripts/local_build.bat`.
 
 <br>
 
