@@ -75,6 +75,7 @@ def run_cleanup():
             if f != jar and re.match(pattern, f):
                 to_move.add(f)
 
+    final_removal_set = {f for f in to_move if not any(lib in f.lower() for lib in utils.PROTECTED_LIBS)}
     protected_detected = to_move - final_removal_set
     if protected_detected:
         print("\nProtected libraries (critical / required):")

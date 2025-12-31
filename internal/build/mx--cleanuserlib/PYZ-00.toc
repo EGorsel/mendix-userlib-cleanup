@@ -1,5 +1,5 @@
-('C:\\Users\\p296880\\Mendix userlib '
- 'cleaner\\mendix-userlib-cleanup-main\\internal\\build\\mx--cleanuserlib\\PYZ-00.pyz',
+('C:\\Users\\p296880\\OneDrive - ANWB\\5. Mendix Functional '
+ 'Tools\\mendix-userlib-cleanup-1.0.0\\internal\\build\\mx--cleanuserlib\\PYZ-00.pyz',
  [('__future__',
    'C:\\Users\\p296880\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\__future__.py',
    'PYMODULE'),
@@ -283,8 +283,8 @@
    'C:\\Users\\p296880\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\urllib\\parse.py',
    'PYMODULE'),
   ('utils',
-   'C:\\Users\\p296880\\Mendix userlib '
-   'cleaner\\mendix-userlib-cleanup-main\\internal\\src\\core\\utils.py',
+   'C:\\Users\\p296880\\OneDrive - ANWB\\5. Mendix Functional '
+   'Tools\\mendix-userlib-cleanup-1.0.0\\internal\\src\\core\\utils.py',
    'PYMODULE'),
   ('zipfile',
    'C:\\Users\\p296880\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\zipfile\\__init__.py',
