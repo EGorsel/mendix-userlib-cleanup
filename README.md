@@ -31,6 +31,9 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
 
 ---
 
+> [!NOTE]
+> In case your browser blocks the .exe file, download the 'Source code (zip)' file instead. Unzip the file after downloading and copy the 'mx--cleanuserlib.exe' file from the unzipper folder to the root directory of your Mendix project.
+
 ## 📖 1. How to Use
 
    ### 📥 1.1. Quick Start
@@ -47,9 +50,6 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
   ```cmd
   mx--cleanuserlib
   ```
-
-> [!NOTE]
-> In case your browser blocks the .exe file, download the 'Source code (zip)' file instead. Unzip the file after downloading and copy the 'mx--cleanuserlib.exe' file from the unzipper folder to the root directory of your Mendix project.
 
    ---
 
