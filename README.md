@@ -14,13 +14,16 @@ This tool was developed to provide Mendix developers with a universal, version-a
 - **Universal**: Specialized support for Mendix 7, 8, 9, 10, and 11.
 - **Safety First**: Moves files to timestamped ZIP backups with a one-click revert.
 - **Vendorlib Aware**: Handles the Mendix 10/11 `vendorlib` structure correctly.
-- **Zero Dependency**: Run as a standalone `.exe`. No Python installation or environment setup is required for end-users.
+- **Zero Dependency**: Standalone execution (.exe) ensures no Python installation is required to run the tool.
 - **CI/CD Ready**: Integrated `--check` mode for automated quality gates.
+
+<br>
 
 ---
 
-## 📥 Quick Start
+## 📖 How to Use
 
+### 📥 1. Quick Start
 1. **Setup**: Download the standalone `.exe` and place it directly into your **Mendix Project Root** (the folder containing your `.mpr` file).
 2. **Run**:
    - Open your project folder in File Explorer.
@@ -31,7 +34,7 @@ This tool was developed to provide Mendix developers with a universal, version-a
 
 ---
 
-## 🔄 Revert Changes
+### 🔄 2. Revert Changes
 Use the commands below in the same directory as the cleanup tool in order to revert changes.
 - **Revert latest Backup**:
 
@@ -39,6 +42,19 @@ Use the commands below in the same directory as the cleanup tool in order to rev
 - **Revert specific Backup**: 
 
         mx--cleanuserlib [zip_filename] --revert
+
+---
+
+### 🛠️ 3. Advanced Usage
+**CI/CD Integration**
+Prevent "JAR Hell" from ever reaching your main branch by adding a cleanup check to your Mendix CI/CD pipeline. For more information on how to integrate custom tools into your Mendix development lifecycle, see the [Mendix CI/CD Capabilities](https://docs.mendix.com/developerportal/deploy/ci-cd-capabilities/) documentation.
+
+```bash
+mx--cleanuserlib --check
+```
+*Returns exit code 1 if redundant files are detected.*
+
+<br>
 
 ---
 
@@ -51,17 +67,8 @@ Use the commands below in the same directory as the cleanup tool in order to rev
 6. **Safety Filtering**: Protects critical system libraries and required files from accidental removal.
 7. **ZIP Archiving**: Moves redundant files into a timestamped ZIP backup for easy restoration.
 
----
 
-## 🛠️ Advanced Usage
-
-### CI/CD Integration
-Prevent "JAR Hell" from ever reaching your main branch by adding a cleanup check to your workflow. For more information on how to integrate custom tools into your Mendix development lifecycle, see the [Mendix CI/CD Capabilities](https://docs.mendix.com/developerportal/deploy/ci-cd-capabilities/) documentation.
-
-```bash
-mx--cleanuserlib --check
-```
-*Returns exit code 1 if redundant files are detected.*
+<br>
 
 ---
 
@@ -75,10 +82,13 @@ mx--cleanuserlib --check
 | `src/engines/clean_userlib_mx8.py` | **Mendix 8**: Tailored for Java 11 transition and initial `.requiredlib` metadata parsing. |
 | `src/engines/clean_userlib_mx7.py` | **Mendix 7**: Baseline logic designed for legacy Java 8 and old module packaging formats. |
 
+<br>
+
 ---
 
 ## 🐛 Report a Bug
 Found an issue? Help us improve by following our [Bug Reporting Guide](docs/BugReport.md). Clear reports with version details help us resolve issues faster.
+
 
 ---
 
