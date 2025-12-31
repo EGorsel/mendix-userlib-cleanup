@@ -1,0 +1,43 @@
+name: Build & Release Standalone
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Build Executable
+        run: |
+          # Bundles the tool into a single directory or file
+          # We include the internal .exe and config files
+          pyinstaller --noconfirm --onedir --console --name mx-clean-userlib `
+            --add-data "src/core;src/core" `
+            --add-data "src/engines;src/engines" `
+            --add-data "config;config" `
+            --add-data "docs;docs" `
+            src/core/manager.py
+
+      - name: Zip Release
+        run: |
+          Compress-Archive -Path dist/mx-clean-userlib/* -DestinationPath mx-clean-userlib-standalone.zip
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: mx-clean-userlib-standalone.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
