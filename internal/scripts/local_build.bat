@@ -16,7 +16,8 @@ if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
 if exist mx--cleanuserlib.spec del mx--cleanuserlib.spec
 
-cd /d "%~dp0.."
+REM Stay in the internal directory where this script and the spec file are
+cd /d "%~dp0"
 
 echo [2/3] Building standalone executable (Optimized)...
 pyinstaller --noconfirm --onefile --console --name mx--cleanuserlib ^
@@ -39,6 +40,8 @@ if %errorlevel% neq 0 (
 )
 
 echo [3/3] Build successful!
-echo The standalone executable can be found in: dist\mx--cleanuserlib\
+echo Moving executable to project root...
+if exist "dist\mx--cleanuserlib.exe" move /y "dist\mx--cleanuserlib.exe" "..\mx--cleanuserlib.exe"
+echo The standalone executable is now in the project root.
 pause
 endlocal
