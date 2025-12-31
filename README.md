@@ -33,31 +33,31 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
 
 ## 📖 1. How to Use
 
-### 📥 1.1. Quick Start
-1. **Setup**: Download the [latest release](https://github.com/EGorsel/mendix-userlib-cleanup/releases) and place `mx--cleanuserlib.exe` in your **Mendix Project Root** (the folder containing your `.mpr` file).
-2. **Run**:
-   - Open your project folder in File Explorer.
-   - Type `cmd` in the address bar and press **Enter**.
-   - Execute:
-     ```cmd
-     mx--cleanuserlib
-     ```
+   ### 📥 1.1. Quick Start
+   1. **Setup**: Download the [latest release](https://github.com/EGorsel/mendix-userlib-cleanup/releases) and place `mx--cleanuserlib.exe` in your **Mendix Project Root** (the folder containing your `.mpr` file).
+   2. **Run**:
+      - Open your project folder in File Explorer.
+      - Type `cmd` in the address bar and press **Enter**.
+      - Execute:
+        ```cmd
+        mx--cleanuserlib
+        ```
 
    ---
 
-### 🔄 1.2. Restoration
-If you need to revert changes, run these in your project root:
-- **Revert Latest**: `mx--cleanuserlib --revert`
-- **Revert Specific**: `mx--cleanuserlib [backup_name.zip] --revert`
+   ### 🔄 1.2. Restoration
+   If you need to revert changes, run these in your project root:
+   - **Revert Latest**: `mx--cleanuserlib --revert`
+   - **Revert Specific**: `mx--cleanuserlib [backup_name.zip] --revert`
 
    ---
 
-### 🛠️ 1.3. CI/CD Integration
-Fail your build pipeline if JAR issues are detected:
-```bash
-mx--cleanuserlib --check
-```
-*Returns **Exit Code 1** if redundant files are identified.*
+   ### 🛠️ 1.3. CI/CD Integration
+   Fail your build pipeline if JAR issues are detected:
+   ```bash
+   mx--cleanuserlib --check
+   ```
+   *Returns **Exit Code 1** if redundant files are identified.*
 
 ---
 
