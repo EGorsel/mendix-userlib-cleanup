@@ -145,6 +145,8 @@ def is_valid_version(v, explicit_set, ranges):
 # find_project_root moved to core/utils.py
 
 def main():
+    print("Mendix Userlib Cleanup script is being executed...")
+    
     # Detect Path Context using standardized resolver
     # Note: utils.resolve_paths handles finding the .mpr
     project_root, userlib_path = utils.resolve_paths(__file__)

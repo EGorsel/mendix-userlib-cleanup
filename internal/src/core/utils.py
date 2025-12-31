@@ -6,13 +6,13 @@ import subprocess
 from datetime import datetime
 import zipfile
 
-# ANSI escape codes for basic terminal coloring
-COLOR_RESET = "\033[0m"
-COLOR_BOLD = "\033[1m"
-COLOR_GREEN = "\033[92m"
-COLOR_RED = "\033[91m"
-COLOR_YELLOW = "\033[93m"
-COLOR_CYAN = "\033[96m"
+# ANSI escape codes disabled per user request
+COLOR_RESET = ""
+COLOR_BOLD = ""
+COLOR_GREEN = ""
+COLOR_RED = ""
+COLOR_YELLOW = ""
+COLOR_CYAN = ""
 
 def log_info(msg): print(f"{COLOR_CYAN}>>> {msg}{COLOR_RESET}")
 def log_success(msg): print(f"    {COLOR_GREEN}✓ {msg}{COLOR_RESET}")
@@ -32,7 +32,7 @@ def log_subheader(msg):
     print(f"------------------------------------------------------------{COLOR_RESET}")
 
 def log_step(current, total, msg):
-    print(f"\n{COLOR_CYAN}[{current}/{total}] {msg}{COLOR_RESET}")
+    print(f"\n{COLOR_CYAN}{msg}{COLOR_RESET}")
 
 def log_divider():
     print(f"{COLOR_CYAN}------------------------------------------------------------{COLOR_RESET}")
@@ -150,13 +150,8 @@ def handle_backup_and_cleanup(to_move, userlib_path, total_scanned=0, engine_nam
     print(f"A total of {COLOR_BOLD}*{len(to_move)} redundant libraries*{COLOR_RESET} were found, including:")
     
     sorted_items = sorted(list(to_move))
-    # Show first 15, then ...
-    display_limit = 15
-    for f in sorted_items[:display_limit]:
+    for f in sorted_items:
         print(f"  - {f}")
-    
-    if len(sorted_items) > display_limit:
-        print(f"  ... (full list included in cleanup summary)")
 
     log_subheader("Scan Summary")
     print(f"  • Total files scanned:       {total_scanned}") 
