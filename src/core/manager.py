@@ -178,90 +178,84 @@ def main():
     # LTS Routing Logic
     LTS_MAPPING = {
         # 11 Series
-        "11.0.0": "clean_userlib_mx11.py",
+        "11.0.0": clean_userlib_mx11.run_cleanup,
         # 10.24 LTS Series
-        "10.24.13": "clean_userlib_mx10.py",
-        "10.24.12": "clean_userlib_mx10.py",
-        "10.24.11": "clean_userlib_mx10.py",
-        "10.24.10": "clean_userlib_mx10.py",
-        "10.24.9": "clean_userlib_mx10.py",
-        "10.24.8": "clean_userlib_mx10.py",
-        "10.24.6": "clean_userlib_mx10.py",
-        "10.24.5": "clean_userlib_mx10.py",
-        "10.24.4": "clean_userlib_mx10.py",
-        "10.24.3": "clean_userlib_mx10.py",
-        "10.24.2": "clean_userlib_mx10.py",
-        "10.24.1": "clean_userlib_mx10.py",
-        "10.24.0": "clean_userlib_mx10.py",
+        "10.24.13": clean_userlib_mx10.run_cleanup,
+        "10.24.12": clean_userlib_mx10.run_cleanup,
+        "10.24.11": clean_userlib_mx10.run_cleanup,
+        "10.24.10": clean_userlib_mx10.run_cleanup,
+        "10.24.9": clean_userlib_mx10.run_cleanup,
+        "10.24.8": clean_userlib_mx10.run_cleanup,
+        "10.24.6": clean_userlib_mx10.run_cleanup,
+        "10.24.5": clean_userlib_mx10.run_cleanup,
+        "10.24.4": clean_userlib_mx10.run_cleanup,
+        "10.24.3": clean_userlib_mx10.run_cleanup,
+        "10.24.2": clean_userlib_mx10.run_cleanup,
+        "10.24.1": clean_userlib_mx10.run_cleanup,
+        "10.24.0": clean_userlib_mx10.run_cleanup,
         # 9.24 LTS Series
-        "9.24.40": "clean_userlib_mx9.py",
-        "9.24.39": "clean_userlib_mx9.py",
-        "9.24.38": "clean_userlib_mx9.py",
-        "9.24.37": "clean_userlib_mx9.py",
-        "9.24.36": "clean_userlib_mx9.py",
-        "9.24.35": "clean_userlib_mx9.py",
-        "9.24.34": "clean_userlib_mx9.py",
+        "9.24.40": clean_userlib_mx9.run_cleanup,
+        "9.24.39": clean_userlib_mx9.run_cleanup,
+        "9.24.38": clean_userlib_mx9.run_cleanup,
+        "9.24.37": clean_userlib_mx9.run_cleanup,
+        "9.24.36": clean_userlib_mx9.run_cleanup,
+        "9.24.35": clean_userlib_mx9.run_cleanup,
+        "9.24.34": clean_userlib_mx9.run_cleanup,
         # 8.18 LTS Series
-        "8.18.35": "clean_userlib_mx8.py",
-        "8.18.34": "clean_userlib_mx8.py"
+        "8.18.35": clean_userlib_mx8.run_cleanup,
+        "8.18.34": clean_userlib_mx8.run_cleanup
     }
     
     # Try exact match first, then prefix match
-    target_script = LTS_MAPPING.get(version_str)
+    target_func = LTS_MAPPING.get(version_str)
     
-    if not target_script:
-        for lts_ver, script in LTS_MAPPING.items():
+    if not target_func:
+        for lts_ver, func in LTS_MAPPING.items():
             if version_str.startswith(lts_ver):
-                target_script = script
+                target_func = func
                 break
     
-    if not target_script:
+    if not target_func:
         try:
             major = int(version_str.split('.')[0])
             # Auto-assign for versions 7-11
             if major == 7:
-                target_script = "clean_userlib_mx7.py"
+                target_func = clean_userlib_mx7.run_cleanup
             elif major == 8:
-                target_script = "clean_userlib_mx8.py"
+                target_func = clean_userlib_mx8.run_cleanup
             elif major == 9:
-                target_script = "clean_userlib_mx9.py"
+                target_func = clean_userlib_mx9.run_cleanup
             elif major == 10:
-                target_script = "clean_userlib_mx10.py"
+                target_func = clean_userlib_mx10.run_cleanup
             elif major == 11:
-                target_script = "clean_userlib_mx11.py"
+                target_func = clean_userlib_mx11.run_cleanup
             elif major > 11:
-                target_script = "clean_userlib_mx11.py"
+                target_func = clean_userlib_mx11.run_cleanup
             elif major < 7:
-                target_script = "clean_userlib_mx7.py"
+                target_func = clean_userlib_mx7.run_cleanup
         except:
             pass
     
-    if target_script:
-        utils.log_success(f"Linked to cleanup engine: {target_script}")
+    if target_func:
+        utils.log_success(f"Linked to cleanup engine: {target_func.__module__}")
         print() # Match user's requested spacing
     else:
         utils.log_error(f"No suitable cleanup script could be assigned for version {version_str}")
         sys.exit(1)
     
-    engines_dir = os.path.join(resource_dir, "src", "engines")
-    script_path = os.path.join(engines_dir, target_script)
-    if not os.path.exists(script_path):
-        print(f"Error: Could not find target script at: {script_path}")
-        sys.exit(1)
-
-    # Execute Target Script
-    sys.stdout.flush()
-    
-    cmd = [sys.executable, script_path] + [arg for arg in sys.argv[1:] if arg not in ['--revert', '--check']]
-    if '--check' in sys.argv:
-        cmd.append('--check')
-    
+    # Execute Targeted Engine directly
     try:
-        subprocess.run(cmd, check=True)
-    except subprocess.CalledProcessError as e:
-        sys.exit(e.returncode)
+        # Pass relevant arguments to the cleanup function
+        # The cleanup functions are expected to handle their own arguments (e.g., --check)
+        # For now, we'll assume they can access sys.argv directly if needed,
+        # or we could pass specific flags.
+        # For this change, we're just calling the function.
+        target_func()
     except KeyboardInterrupt:
         utils.log_info("Operation cancelled by user.")
+        sys.exit(1)
+    except Exception as e:
+        utils.log_error(f"Engine failure: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":

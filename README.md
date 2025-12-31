@@ -21,7 +21,7 @@ This tool was developed to provide Mendix developers with a universal, version-a
 
 ## 📥 Quick Start
 
-1. **Setup**: Copy the cleanup tool folder (or the standalone `.exe`) directly into your **Mendix Project Root** (where your `.mpr` file is located).
+1. **Setup**: Download the standalone `.exe` and place it directly into your **Mendix Project Root** (the folder containing your `.mpr` file).
 2. **Run**:
    - Open your project folder in File Explorer.
    - Type `cmd` in the address bar and press **Enter**.
@@ -54,11 +54,6 @@ Use the commands below in the same directory as the cleanup tool in order to rev
 ---
 
 ## 🛠️ Advanced Usage
-
-### Standalone Executable (No Python)
-If you don't want to install Python, download the latest standalone ZIP from our [Releases](https://github.com/EGorsel/mendix-userlib-cleanup/releases). It includes everything you need to run the tool instantly.
-
-*Note: Developers can generate their own standalone build by running `scripts\local_build.bat`.*
 
 ### CI/CD Integration
 Prevent "JAR Hell" from ever reaching your main branch by adding a cleanup check to your workflow:

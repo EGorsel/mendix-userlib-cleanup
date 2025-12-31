@@ -13,7 +13,7 @@ import re
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'core'))
 import utils
 
-def clean_mx7_userlib():
+def run_cleanup():
     # Resolve paths using standardized resolver
     project_root, userlib_path = utils.resolve_paths(__file__)
 
@@ -48,4 +48,4 @@ def clean_mx7_userlib():
     utils.handle_backup_and_cleanup(final_removal_set, userlib_path, engine_name="Mendix 7 Engine")
 
 if __name__ == "__main__":
-    clean_mx7_userlib()
+    run_cleanup()

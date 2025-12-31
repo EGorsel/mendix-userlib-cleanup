@@ -16,7 +16,7 @@ import utils
 
 # Vendorlib scanning moved to core/cleanup_utils.py
 
-def clean_mx10_userlib():
+def run_cleanup():
     # Resolve paths using standardized resolver
     project_root, userlib_path = utils.resolve_paths(__file__)
 
@@ -84,4 +84,4 @@ def clean_mx10_userlib():
     utils.handle_backup_and_cleanup(final_removal_set, userlib_path, engine_name="Mendix 10 Engine")
 
 if __name__ == "__main__":
-    clean_mx10_userlib()
+    run_cleanup()
