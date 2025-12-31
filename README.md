@@ -97,13 +97,6 @@ The suite follows a standard audit methodology:
 
 ---
 
-## � 5. Roadmap
-- [ ] **Cross-Platform**: Go-based rewrite for Linux/macOS CI/CD runner support.
-- [ ] **Dependency Tree**: Visual graph output of JAR relationships.
-- [ ] **Web UI**: Local dashboard for visually managing library conflicts.
-
----
-
 ## 🤝 6. Contributing & Support
 This is a **community-driven** project. We welcome contributions of all kinds!
 
