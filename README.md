@@ -1,25 +1,64 @@
 # 🚀 Mendix Universal Userlib Cleanup Suite
 
-A version-aware automation suite to solve "JAR Hell" in Mendix projects (v7–v11). It identifies redundant libraries, creates backups, and ensures stability.
 
 ### Why this Project?
-This tool was developed to provide Mendix developers with a universal, version-aware cleanup solution that adapts to different platform architectures. It is built upon the powerful [mendix-userlib-cleaner](https://github.com/cinaq/mendix-userlib-cleaner) engine by **CINAQ Technology**, extending its capabilities with automated version detection and specialized logic for Mendix 7 through 11.
+This tool provides Mendix developers with a universal, version-aware suite to solve "JAR Hell" in Mendix projects (v7–v11). The project is built upon the powerful [mendix-userlib-cleaner](https://github.com/cinaq/mendix-userlib-cleaner) engine by **CINAQ Technology** and extends the core capabilities of the engine with:
+
+- **Automated Version Detection**: Intelligence to read `.mpr` metadata and apply the correct logic for Mendix 7 through 11 automatically.
+- **Universal Support**: Specialized engines tailored for the evolving architectures of Mendix 7, 8, 9, 10, and 11.
+- **Vendorlib Awareness**: Advanced logic to correctly handle the Mendix 10/11 `vendorlib` architecture and managed dependencies.
+- **Zero-Dependency Standalone Mode**: Standalone execution (.exe) — no Python installation required for end-users ([Security Note](#-security--trust)).
+- **DevOps & CI/CD Ready**: Integrated `--check` mode for automated quality gates and pipeline validation.
+- **Enhanced Safety**: Moves files to timestamped ZIP backups with a reliable one-click revert mechanism.
 
 <div align="right"><b>Created by: Erik van Gorsel</b></div>
 
 ---
 
-## 🌟 Key Features
-- **Auto-Detection**: Reads `.mpr` to apply the correct logic for your Mendix version.
-- **Universal**: Specialized support for Mendix 7, 8, 9, 10, and 11.
-- **Safety First**: Moves files to timestamped ZIP backups with a one-click revert.
-- **Vendorlib Aware**: Handles the Mendix 10/11 `vendorlib` structure correctly.
-- **Standalone**: execution (.exe) ensures no Python installation is required to run the tool. (See [Security & Trust](#-security--trust) note below).
-- **CI/CD Ready**: Integrated `--check` mode for automated quality gates.
+## 📖 1. How to Use
+
+### 📥 1.1. Quick Start
+1. **Setup**: Download the standalone `.exe` and place it in your **Mendix Project Root** (the folder containing your `.mpr` file).
+2. **Run**:
+   - Open your project folder in File Explorer.
+   - Type `cmd` in the address bar and press **Enter**.
+   - Execute the tool:
+     ```cmd
+     mx--cleanuserlib
+     ```
 
 ---
 
-## 🛡️ Security & Trust
+### 🔄 1.2. Revert Changes
+To restore deleted files, run these commands in your project root:
+- **Revert Latest Backup**:
+  ```cmd
+  mx--cleanuserlib --revert
+  ```
+- **Revert Specific Backup**: 
+  ```cmd
+  mx--cleanuserlib [zip_filename] --revert
+  ```
+
+---
+
+### 🛠️ 1.3. Advanced Usage (CI/CD)
+Prevent "JAR Hell" from ever reaching your main branch by adding a check to your Mendix CI/CD pipeline. 
+
+```bash
+mx--cleanuserlib --check
+```
+*Returns **Exit Code 1** if redundant files are detected.*
+
+> [!NOTE]
+> See [Mendix CI/CD Capabilities](https://docs.mendix.com/developerportal/deploy/ci-cd-capabilities/) for official guidance on integrating custom tools.
+
+
+
+---
+
+
+## 🛡️ 2. Security & Trust
 As this is a custom-built tool, some browsers (like Microsoft Edge) or Windows SmartScreen may show a warning when downloading or running the `.exe` for the first time (e.g., *"not commonly downloaded"*).
 
 **To proceed safely:**
@@ -27,87 +66,39 @@ As this is a custom-built tool, some browsers (like Microsoft Edge) or Windows S
 2. **Windows**: If a blue "Windows protected your PC" popup appears, click **More info** > select **Run anyway**.
 
 > [!TIP]
-> This tool is open-source. For maximum transparency, you can review the source code in the `internal/src` directory or build the executable yourself using the provided `internal/scripts/local_build.bat`.
-
-<br>
+> This tool is open-source. For maximum transparency, you can review the source code in the `internal/src` directory or build the binary yourself using the provided `internal/scripts/local_build.bat`.
 
 ---
 
-## 📖 How to Use
-
-### 📥 1. Quick Start
-1. **Setup**: Download the standalone `.exe` and place it directly into your **Mendix Project Root** (the folder containing your `.mpr` file).
-2. **Run**:
-   - Open your project folder in File Explorer.
-   - Type `cmd` in the address bar and press **Enter**.
-   - Run the command:
-
-          mx--cleanuserlib
-
----
-
-### 🔄 2. Revert Changes
-Use the commands below in the same directory as the cleanup tool in order to revert changes.
-- **Revert latest Backup**:
-
-        mx--cleanuserlib --revert
-- **Revert specific Backup**: 
-
-        mx--cleanuserlib [zip_filename] --revert
-
----
-
-### 🛠️ 3. Advanced Usage
-**CI/CD Integration**
-Prevent "JAR Hell" from ever reaching your main branch by adding a cleanup check to your Mendix CI/CD pipeline. For more information on how to integrate custom tools into your Mendix development lifecycle, see the [Mendix CI/CD Capabilities](https://docs.mendix.com/developerportal/deploy/ci-cd-capabilities/) documentation.
-
-```bash
-mx--cleanuserlib --check
-```
-*Returns exit code 1 if redundant files are detected.*
-
-<br>
-
----
-
-## ⚙️ How it Works (Under the Hood)
+## ⚙️ 3. How the project Works
 1. **Context Resolution**: Locates your Mendix project root by searching for the `.mpr` file.
-2. **Version Detection**: Extracts the exact Mendix Studio Pro version from your project metadata.
-3. **Smart Routing**: Selects the specialized cleanup script (Mx7–Mx11) based on the detected version.
-4. **Vendorlib Audit (Mx10+)**: Cross-references the `vendorlib` folder to identify JARs that are now managed by Mendix.
-5. **Deep Scanning**: Runs a signature-based engine (`.exe`) to find identical libraries even if filenames differ.
-6. **Safety Filtering**: Protects critical system libraries and required files from accidental removal.
-7. **ZIP Archiving**: Moves redundant files into a timestamped ZIP backup for easy restoration.
-
-
-<br>
+2. **Version Detection**: Extracts the exact Mendix Studio Pro version from project metadata.
+3. **Smart Routing**: Routes to the specialized cleanup engine (Mx7–Mx11) for that version.
+4. **Vendorlib Audit (Mx10+)**: Cross-references the `vendorlib` folder to identify JARs managed by Mendix.
+5. **Deep Scanning**: Runs a signature-based engine to find identical libraries even if filenames differ.
+6. **Safety Filtering**: Protects critical system libraries and required files.
+7. **ZIP Archiving**: Moves redundant files to a timestamped ZIP for easy restoration.
 
 ---
 
-## 📂 Architecture
-| Script | Platform Shift & Logic Evolution |
+## 📂 4. Architecture
+| Script | Responsibility |
 | :--- | :--- |
-| `internal/src/core/manager.py` | **The Orchestrator**: Handles version detection, routing, and safety health-checks. |
-| `internal/src/engines/clean_userlib_mx11.py` | **Mendix 11**: Optimized for Java 21 and advanced `vendorlib` dependency resolution. |
-| `internal/src/engines/clean_userlib_mx10.py` | **Mendix 10**: Cross-references "unmanaged" `userlib` against the new "managed" `vendorlib` architecture. |
-| `internal/src/engines/clean_userlib_mx9.py` | **Mendix 9**: Implements advanced name normalization and legacy deep-scan support. |
-| `internal/src/engines/clean_userlib_mx8.py` | **Mendix 8**: Tailored for Java 11 transition and initial `.requiredlib` metadata parsing. |
-| `internal/src/engines/clean_userlib_mx7.py` | **Mendix 7**: Baseline logic designed for legacy Java 8 and old module packaging formats. |
-
-<br>
+| `internal/src/core/manager.py` | **The Orchestrator**: Handles version detection, routing, and safety checks. |
+| `internal/src/engines/clean_userlib_mx11.py` | **Mendix 11**: Optimized for Java 21 and `vendorlib` resolution. |
+| `internal/src/engines/clean_userlib_mx10.py` | **Mendix 10**: Cross-references `userlib` against the `vendorlib` architecture. |
+| `internal/src/engines/clean_userlib_mx9.py` | **Mendix 9**: Implements advanced name normalization and deep-scan support. |
+| `internal/src/engines/clean_userlib_mx8.py` | **Mendix 8**: Tailored for Java 11 transition and `.requiredlib` parsing. |
+| `internal/src/engines/clean_userlib_mx7.py` | **Mendix 7**: Baseline logic for legacy Java 8 and old module formats. |
 
 ---
 
-## 🐛 Report a Bug
-Found an issue? Help us improve by following our [Security & Bug Reporting Guide](SECURITY.md). Clear reports with version details help us resolve issues faster.
-
-
----
-
-## 🤝 Contributing
-We welcome the community to help make this tool better for everyone! Whether you want to fix a bug, suggest a feature, or improve documentation, please see our [Contribution Guide](CONTRIBUTING.md) to get started.
+## 🛡️ 5. License
+Distrubuted under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ---
 
-## 🤝 Credits
-Built upon the [mendix-userlib-cleaner](https://github.com/cinaq/mendix-userlib-cleaner) engine by **CINAQ Technology**.
+## 🐛 6. Community & Support
+- **Bugs**: Found an issue? See our [Security & Bug Reporting Guide](SECURITY.md).
+- **Contributing**: We welcome community help! Check the [Contribution Guide](CONTRIBUTING.md).
+- **Credits**: Built upon the [mendix-userlib-cleaner](https://github.com/cinaq/mendix-userlib-cleaner) engine by **CINAQ Technology**.
