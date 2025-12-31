@@ -21,7 +21,7 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
 - **Zero Dependency**: Standalone binary (.exe) — no environment setup needed.
 - **Enhanced Safety**: Automatic timestamped ZIP archiving with instant restoration.
 
-<div align="right"><b>Maintained by: <a href="https://github.com/EGorsel">Erik van Gorsel</a></b></div>
+<div align="right"><b>Created by: <a href="https://github.com/EGorsel">Erik van Gorsel</a></b></div>
 
 ---
 
