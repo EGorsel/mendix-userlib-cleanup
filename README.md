@@ -31,7 +31,7 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
 
 ---
 
-> [!NOTE]
+> [!IMPORTANT]
 > In case your browser blocks the .exe file, download the 'Source code (zip)' file instead. Unzip the file after downloading and copy the 'mx--cleanuserlib.exe' file from the unzipper folder to the root directory of your Mendix project.
 
 ## 📖 1. How to Use
@@ -95,7 +95,7 @@ As a portable utility, Windows SmartScreen may flag the `.exe` as "uncommon."
 - **Edge**: `...` > **Keep** > **Show more** > **Keep anyway**.
 - **Windows**: **More info** > **Run anyway**.
 
-> [!NOTE]
+> [!IMPORTANT]
 > This project is 100% open-source. For maximum transparency, you can review the source code in `internal/src` or build the binary yourself using `internal/scripts/local_build.bat`.
 
 ---
