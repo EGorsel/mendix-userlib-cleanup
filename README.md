@@ -54,8 +54,15 @@ The project is built upon the powerful [mendix-userlib-cleaner](https://github.c
 
    ### 🔄 1.2. Restoration
    If you need to revert changes, run these in your project root:
-   - **Revert Latest**: `mx--cleanuserlib --revert`
-   - **Revert Specific**: `mx--cleanuserlib [backup_name.zip] --revert`
+   - **Revert Latest**:
+   ```cmd
+      mx--cleanuserlib
+   ```
+   
+   - **Revert Specific**:
+   ```cmd
+      mx--cleanuserlib [backup_name.zip] --revert
+   ```
 
    ---
 
