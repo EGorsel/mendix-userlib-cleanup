@@ -14,8 +14,8 @@ This tool was developed to provide Mendix developers with a universal, version-a
 - **Universal**: Specialized support for Mendix 7, 8, 9, 10, and 11.
 - **Safety First**: Moves files to timestamped ZIP backups with a one-click revert.
 - **Vendorlib Aware**: Handles the Mendix 10/11 `vendorlib` structure correctly.
-- **Zero Dependency**: Standalone `.exe` available (no Python required).
-- **CI/CD Ready**: Integrated `--check` mode for GitHub Actions/Pipelines.
+- **Zero Dependency**: Run as a standalone `.exe`. No Python installation or environment setup is required for end-users.
+- **CI/CD Ready**: Integrated `--check` mode for automated quality gates.
 
 ---
 
@@ -56,7 +56,7 @@ Use the commands below in the same directory as the cleanup tool in order to rev
 ## 🛠️ Advanced Usage
 
 ### CI/CD Integration
-Prevent "JAR Hell" from ever reaching your main branch by adding a cleanup check to your workflow:
+Prevent "JAR Hell" from ever reaching your main branch by adding a cleanup check to your workflow. For more information on how to integrate custom tools into your Mendix development lifecycle, see the [Mendix CI/CD Capabilities](https://docs.mendix.com/developerportal/deploy/ci-cd-capabilities/) documentation.
 
 ```bash
 mx--cleanuserlib --check
