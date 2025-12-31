@@ -169,11 +169,13 @@ def main():
         utils.revert_files(userlib_path)
         sys.exit(0)
     
-    utils.log_header("Mendix Userlib Cleanup")
-    print() # Match user's requested spacing
+    utils.log_header("Mendix Userlib Cleanup Utility")
+    print() 
+    
+    utils.log_info("Initializing cleanup process...")
     
     # 1. Detect Version
-    utils.log_info("Detecting used Mendix Studio Pro version...")
+    utils.log_step(1, 5, "Detecting Mendix Studio Pro version...")
     version_str = get_mendix_version(project_root)
     
     # Load reference data from the bundled config
@@ -181,9 +183,10 @@ def main():
     explicit_set, ranges = parse_mx_versions(os.path.join(config_dir, "MxVersions.txt"))
     
     if version_str:
-        utils.log_success(f"Detected Mendix Version: {version_str}")
-        print() # Match user's requested spacing
-        utils.log_info(f"Matching found Mendix version {version_str} with best suitable cleanup engine....")
+        utils.log_success(f"Detected Mendix version: {version_str}")
+        
+        utils.log_step(2, 5, "Selecting appropriate cleanup engine...")
+        # utils.log_info(f"Matching found Mendix version {version_str} with best suitable cleanup engine....")
     else:
         utils.log_warning("Could not determine project version automatically.")
         version_str = input(f"{utils.COLOR_BOLD}Please enter the Mendix Studio Pro version used for this project (e.g., 9.14.2):{utils.COLOR_RESET} ").strip()
@@ -253,8 +256,7 @@ def main():
             pass
     
     if target_func:
-        utils.log_success(f"Linked to cleanup engine: {target_func.__module__}")
-        print() # Match user's requested spacing
+        utils.log_success(f"Matched cleanup engine: {target_func.__module__}")
     else:
         utils.log_error(f"No suitable cleanup script could be assigned for version {version_str}")
         sys.exit(1)

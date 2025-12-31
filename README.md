@@ -108,7 +108,7 @@ As a portable utility, Windows SmartScreen may flag the `.exe` as "uncommon."
 | `internal/src/engines/clean_userlib_mx11.py` | **Mx11 Engine**: optimized for Java 21 and vendorlib registries. |
 | `internal/src/engines/clean_userlib_mx10.py` | **Mx10 Engine**: handles managed vs unmanaged dependency audits. |
 | `internal/src/engines/clean_userlib_mx9.py` | **Mx9 Engine**: advanced name normalization and deep-scan logic. |
-| `internal/src/engines/clean_userlib_mx8.py` | **Mx8 Engine**: handles `.requiredlib` metadata and Java 11 transition. |
+| `internal/src/engines/clean_userlib_mx8.py" | **Mx8 Engine**: handles `.requiredlib` metadata and Java 11 transition. |
 | `internal/src/engines/clean_userlib_mx7.py` | **Mx7 Engine**: baseline logic for legacy module packaging. |
 
 ---

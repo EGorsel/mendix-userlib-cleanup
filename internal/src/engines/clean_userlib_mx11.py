@@ -62,7 +62,7 @@ def run_cleanup():
                 to_move.add(old['file'])
 
     # 3. Deep scan with .exe tool
-    utils.log_info("Running deep scan with signature-based engine...")
+    utils.log_subheader("Running deep scan (signature-based analysis)")
     exe_findings = utils.get_exe_tool_findings(userlib_path)
     for f in exe_findings:
         if f in jars:
@@ -76,13 +76,13 @@ def run_cleanup():
             if f != jar and re.match(pattern, f):
                 to_move.add(f)
 
-    # Filtering protected libs
-    final_removal_set = {f for f in to_move if not any(lib in f.lower() for lib in utils.PROTECTED_LIBS)}
-    for prot in (to_move - final_removal_set):
-        utils.log_info(f"Protecting critical library: {prot}")
+    protected_detected = to_move - final_removal_set
+    if protected_detected:
+        print("\nProtected libraries (critical / required):")
+        for prot in sorted(list(protected_detected)):
+            print(f"  - {prot}")
 
-    utils.log_info(f"Reviewed {len(all_files)} files in userlib.")
-    utils.handle_backup_and_cleanup(final_removal_set, userlib_path, engine_name="Mendix 11 Engine")
+    utils.handle_backup_and_cleanup(final_removal_set, userlib_path, total_scanned=len(all_files), engine_name="Mendix 11 Engine")
 
 if __name__ == "__main__":
     run_cleanup()

@@ -14,11 +14,28 @@ COLOR_RED = "\033[91m"
 COLOR_YELLOW = "\033[93m"
 COLOR_CYAN = "\033[96m"
 
-def log_info(msg): print(f"{COLOR_CYAN}[INFO]{COLOR_RESET} {msg}")
-def log_success(msg): print(f"{COLOR_GREEN}[SUCCESS]{COLOR_RESET} {msg}")
-def log_warning(msg): print(f"{COLOR_YELLOW}[WARNING]{COLOR_RESET} {msg}")
-def log_error(msg): print(f"{COLOR_RED}[ERROR]{COLOR_RESET} {msg}")
-def log_header(msg): print(f"\n{COLOR_BOLD}{COLOR_CYAN}--- {msg} ---{COLOR_RESET}")
+def log_info(msg): print(f"{COLOR_CYAN}>>> {msg}{COLOR_RESET}")
+def log_success(msg): print(f"    {COLOR_GREEN}✓ {msg}{COLOR_RESET}")
+def log_warning(msg): print(f"{COLOR_YELLOW}⚠️  WARNING: {msg}{COLOR_RESET}")
+def log_error(msg): print(f"{COLOR_RED}❌ ERROR: {msg}{COLOR_RESET}")
+
+def log_header(msg):
+    width = 60
+    padding = (width - len(msg)) // 2
+    print(f"\n{COLOR_CYAN}{'=' * width}")
+    print(f"{' ' * padding}{msg}")
+    print(f"{'=' * width}{COLOR_RESET}")
+
+def log_subheader(msg):
+    print(f"\n{COLOR_CYAN}------------------------------------------------------------")
+    print(f"   {msg}")
+    print(f"------------------------------------------------------------{COLOR_RESET}")
+
+def log_step(current, total, msg):
+    print(f"\n{COLOR_CYAN}[{current}/{total}] {msg}{COLOR_RESET}")
+
+def log_divider():
+    print(f"{COLOR_CYAN}------------------------------------------------------------{COLOR_RESET}")
 
 class SimpleVersion:
     """A minimal version parser to replace the 'packaging' library dependency."""
@@ -115,11 +132,12 @@ def create_backup_manifest(to_move, timestamp):
         manifest.append(f" - {f}")
     return "\n".join(manifest)
 
-def handle_backup_and_cleanup(to_move, userlib_path, engine_name="Unknown"):
+def handle_backup_and_cleanup(to_move, userlib_path, total_scanned=0, engine_name="Unknown"):
     """Centralized backup, compression, and removal logic with clear feedback."""
     check_mode = '--check' in sys.argv
 
     if not to_move:
+        log_divider()
         log_success(f"Everything is clean! No redundant libraries found by {engine_name} scan.")
         return
 
@@ -128,21 +146,39 @@ def handle_backup_and_cleanup(to_move, userlib_path, engine_name="Unknown"):
         log_error(f"Cleanup check failed: Found {len(to_move)} redundant files.")
         sys.exit(1)
 
-    log_info(f"Cleanup engine identified {len(to_move)} redundant userlib items:")
-    sorted_items = sorted(list(to_move))
-    for i, f in enumerate(sorted_items, 1):
-        print(f"  {COLOR_CYAN}[{i}]{COLOR_RESET} : {f}")
-
-    print(f"\n  {COLOR_CYAN}[CONFIRMATION]{COLOR_RESET} Proceed to remove these files from the userlib folder? \n  A backup ZIP will be created automatically in 'userlib_backup/'.")
-    print(f"  Confirm by typing {COLOR_BOLD}\"PROCEED\"{COLOR_RESET} or cancel by typing \"CANCEL\"")
+    log_subheader("Redundant libraries detected")
+    print(f"A total of {COLOR_BOLD}*{len(to_move)} redundant libraries*{COLOR_RESET} were found, including:")
     
-    confirm = input(f"\n  -> ").strip().upper()
+    sorted_items = sorted(list(to_move))
+    # Show first 15, then ...
+    display_limit = 15
+    for f in sorted_items[:display_limit]:
+        print(f"  - {f}")
+    
+    if len(sorted_items) > display_limit:
+        print(f"  ... (full list included in cleanup summary)")
+
+    log_subheader("Scan Summary")
+    print(f"  • Total files scanned:       {total_scanned}") 
+    print(f"  • Redundant files detected:   {len(to_move)}")
+    print(f"  • Protected files:           (multiple, see above)")
+
+    log_divider()
+    log_warning(f"The cleanup will remove {len(to_move)} files from /userlib.")
+    print(f"    A backup ZIP will be created automatically in:")
+    print(f"       userlib_backup/<timestamp>.zip")
+    
+    print(f"\nType {COLOR_BOLD}\"PROCEED\"{COLOR_RESET} to confirm and continue.")
+    confirm = input(f"→ ").strip().upper()
+
     if confirm == 'CANCEL':
         log_info("Operation cancelled. No changes were made.")
         sys.exit(0)
     elif confirm != 'PROCEED':
         log_error("Invalid input. Operation cancelled for safety.")
         sys.exit(1)
+
+    log_subheader("Performing cleanup...")
 
     backup_folder = os.path.join(userlib_path, 'userlib_backup')
     if not os.path.exists(backup_folder):
@@ -166,10 +202,17 @@ def handle_backup_and_cleanup(to_move, userlib_path, engine_name="Unknown"):
                     os.remove(full_path)
         
         num_files = len(to_move)
-        log_success(f"Succesfully compressed {num_files} userlib files, to a zip file for backuip and removed the original {num_files} files from the userlib folder")
+        log_success("Backup archive created successfully")
+        log_success(f"{num_files} redundant files removed from /userlib/")
         
         # Simple post-cleanup health check
+        print()
+        log_step(5, 5, "Running post-cleanup project health check...")
         validate_cleanup_result(project_root=os.path.dirname(userlib_path))
+        
+        log_header("Cleanup Complete — Userlib successfully optimized!")
+        print("\nThank you for using the Mendix Userlib Cleanup Utility.")
+        print("Hope it saved you some time! 😊\n")
     except Exception as e:
         log_error(f"Error during backup process: {e}")
 
@@ -179,7 +222,7 @@ def validate_cleanup_result(project_root):
     1. Check if .mpr exists and is readable.
     2. Check for critical Mendix system artifacts.
     """
-    log_info("Scanning project health post-cleanup...")
+    # log_info("Scanning project health post-cleanup...")
     
     # 1. Database Check
     mpr_files = [f for f in os.listdir(project_root) if f.endswith('.mpr') and not f.endswith('.bak')]
